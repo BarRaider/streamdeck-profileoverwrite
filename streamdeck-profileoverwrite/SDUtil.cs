@@ -22,7 +22,7 @@ namespace ProfileOverwrite
             {
                 case "20GAA9901":
                     return StreamDeckType.Classic;
-                case "20GAx9901":
+                case "20GAT9901":
                     return StreamDeckType.XL;
                 case "20GAI9901":
                     return StreamDeckType.Mini;

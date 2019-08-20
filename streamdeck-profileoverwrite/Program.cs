@@ -5,8 +5,8 @@ namespace ProfileOverwrite
 {
     class Program
     {
-        private const string VERSION = "1.1";
-        private static ProfilesExplorer pe = new ProfilesExplorer();
+        private const string VERSION = "1.2";
+        private static readonly ProfilesExplorer pe = new ProfilesExplorer();
         static void Main(string[] args)
         {
             try
@@ -140,9 +140,8 @@ namespace ProfileOverwrite
 
         private static int? SanitizeNumericInput(int maxNum)
         {
-            int numeric;
             string result = Console.ReadLine();
-            if (!Int32.TryParse(result, out numeric))
+            if (!Int32.TryParse(result, out int numeric))
             {
                 Console.WriteLine("Invalid input! Number expected");
                 return null;
