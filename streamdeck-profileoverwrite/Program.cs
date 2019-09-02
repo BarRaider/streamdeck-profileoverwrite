@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ProfileOverwrite
@@ -11,19 +12,30 @@ namespace ProfileOverwrite
         {
             try
             {
+                List<ProfileInfo> overwriteProfiles = new List<ProfileInfo>();
                 Console.WriteLine($"Stream Deck Profile Overwrite v{VERSION} by BarRaider\r\nView my other projects on: https://BarRaider.github.io\r\nDISCLAIMER: This may damage your profiles! Use with caution and under your own risk\r\nTo make sure I stress this enough - this usually works but you MAY loose the profile - make a backup by EXPORTING the profile before running this app...");
                 var originalProfile = GetProfile("Enter the number of the profile to copy FROM: ");
                 if (originalProfile == null)
                 {
                     return;
                 }
-                var overwriteProfile = GetProfile("Enter the number of the profile to MODIFY: ");
-                if (overwriteProfile == null)
-                {
-                    return;
-                }
 
-                HandleProfileOverwrite(originalProfile, overwriteProfile);
+                ProfileInfo overwriteProfile = null;
+                do
+                {
+                    string prefix = String.Empty;
+                    if (overwriteProfiles.Count > 0)
+                    {
+                        prefix = "Modifying profiles: " + string.Join(", ", overwriteProfiles.Select(p => p.Name).ToArray()) + "\n";
+                    }
+                    overwriteProfile = GetProfile(prefix + "Enter the number of the profile to MODIFY (or any non-numeric value to move to next step): ");
+                    if (overwriteProfile != null)
+                    {
+                        overwriteProfiles.Add(overwriteProfile);
+                    }
+                } while (overwriteProfile != null);
+
+                HandleProfilesOverwrite(originalProfile, overwriteProfiles);
                 Console.WriteLine("Please completely shut down the Stream Deck app and restart it to see the change");
 
             }
@@ -34,7 +46,7 @@ namespace ProfileOverwrite
             }
         }
 
-        private static void HandleProfileOverwrite(ProfileInfo originalProfile, ProfileInfo overwriteProfile)
+        private static void HandleProfilesOverwrite(ProfileInfo originalProfile, List<ProfileInfo> overwriteProfiles)
         {
             var streamDeckType = SDUtil.GetStreamDeckTypeFromProfile(originalProfile);
             int maxCols = SDUtil.GetColumnsForStreamDeckType(streamDeckType);
@@ -49,7 +61,11 @@ namespace ProfileOverwrite
                     Console.WriteLine("Invalid column, exiting");
                     return;
                 }
-                pe.OverwriteColumn(originalProfile, overwriteProfile, col.Value);
+                foreach (var profile in overwriteProfiles)
+                {
+                    Console.WriteLine($"Updating column on profile: {profile.Name}...");
+                    pe.OverwriteColumn(originalProfile, profile, col.Value);
+                }
             }
         }
         
